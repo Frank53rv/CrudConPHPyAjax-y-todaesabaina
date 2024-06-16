@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Personas</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Gestión de Personas</h1>
+
+    <!-- Formulario para agregar una nueva persona -->
+    <form id="form-agregar">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required>
+        <label for="apellido">Apellido:</label>
+        <input type="text" id="apellido" name="apellido" required>
+        <label for="cumple">Fecha de cumpleaños:</label>
+        <input type="date" id="cumple" name="cumple" required>
+        <label for="mail">Correo electrónico:</label>
+        <input type="email" id="mail" name="mail" required>
+        <label for="cel">Celular:</label>
+        <input type="tel" id="cel" name="cel" required>
+        <button type="submit">Agregar</button>
+    </form>
+
+    <!-- Tabla para mostrar las personas -->
+    <table id="tabla-personas">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Cumpleaños</th>
+                <th>Correo electrónico</th>
+                <th>Celular</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Aquí se mostrarán las personas -->
+        </tbody>
+    </table>
+
+    <!-- Formulario para editar una persona -->
+    <form id="form-editar" style="display: none;">
+        <input type="hidden" id="id-editar" name="id">
+        <label for="nombre-editar">Nombre:</label>
+        <input type="text" id="nombre-editar" name="nombre" required>
+        <label for="apellido-editar">Apellido:</label>
+        <input type="text" id="apellido-editar" name="apellido" required>
+        <label for="cumple-editar">Fecha de cumpleaños:</label>
+        <input type="date" id="cumple-editar" name="cumple" required>
+        <label for="mail-editar">Correo electrónico:</label>
+        <input type="email" id="mail-editar" name="mail" required>
+        <label for="cel-editar">Celular:</label>
+        <input type="tel" id="cel-editar" name="cel" required>
+        <button type="submit">Actualizar</button>
+    </form>
+
+    <script>
+        $(document).ready(function() {
+            // Crear persona
+            $('#form-agregar').submit(function(event) {
+                event.preventDefault();
+                var datos = $(this).serialize();
+                $.ajax({
+                    type: "POST",
+                    url: "create.php",
+                    data: datos,
+                    dataType: "json",
+                    success: function(response) {
+                        if (response.error) {
+                            alert('Error: ' + response.error);
+                        } else {
+                            $('#tabla-personas tbody').append('<tr><td>' + response.id + '</td><td>' + response.nombre + '</td><td>' + response.apellido + '</td><td>' + response.cumple + '</td><td>' + response.mail + '</td><td>' + response.cel + '</td><td><button class="editar">Editar</button><button class="eliminar">Eliminar</button></td></tr>');
+                            $('#form-agregar')[0].reset();
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error en la solicitud: ' + textStatus);
+                    }
+                });
+            });
+
+            // Leer personas
+            $.ajax({
+                type: "GET",
+                url: "read.php",
+                dataType: "json",
+                success: function(response) {
+                    response.forEach(function(persona) {
+                        $('#tabla-personas tbody').append('<tr><td>' + persona.id + '</td><td>' + persona.nombre + '</td><td>' + persona.apellido + '</td><td>' + persona.cumple + '</td><td>' + persona.mail + '</td><td>' + persona.cel + '</td><td><button class="editar">Editar</button><button class="eliminar">Eliminar</button></td></tr>');
+                    });
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error en la solicitud: ' + textStatus);
+                }
+            });
+
+            // Editar persona
+            $(document).on('click', '.editar', function() {
+                var id = $(this).closest('tr').find('td:first').text();
+                $.ajax({
+                    type: "GET",
+                    url: "ead.php",
+                    data: { id: id },
+                    dataType: "json",
+                    success: function(data) {
+                        $('#id-editar').val(data.id);
+                        $('#nombre-editar').val(data.nombre);
+                        $('#apellido-editar').val(data.apellido);
+                        $('#cumple-editar').val(data.cumple);
+                        $('#mail-editar').val(data.mail);
+                        $('#cel-editar').val(data.cel);
+                        $('#form-editar').show();
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error en la solicitud: ' + textStatus);
+                    }
+                });
+            });
+
+            // Actualizar persona
+            $('#form-editar').submit(function(event) {
+                event.preventDefault();
+                var datos = $(this).serialize();
+                $.ajax({
+                    type: "POST",  // Cambiado a POST
+                    url: "update.php",
+                    data: datos,
+                    dataType: "json",
+                    success: function(response) {
+                        if (response.error) {
+                            alert('Error: ' + response.error);
+                        } else {
+                            $('#tabla-personas tbody tr').each(function() {
+                                if ($(this).find('td:first').text() == response.id) {
+                                    $(this).find('td:eq(1)').text(response.nombre);
+                                    $(this).find('td:eq(2)').text(response.apellido);
+                                    $(this).find('td:eq(3)').text(response.cumple);
+                                    $(this).find('td:eq(4)').text(response.mail);
+                                    $(this).find('td:eq(5)').text(response.cel);
+                                }
+                            });
+                            $('#form-editar').hide();
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error en la solicitud: ' + textStatus);
+                    }
+                });
+            });
+
+            // Eliminar persona
+            $(document).on('click', '.eliminar', function() {
+                var id = $(this).closest('tr').find('td:first').text();
+                $.ajax({
+                    type: "POST",  // Cambiado a POST
+                    url: "delete.php",
+                    data: { id: id },
+                    dataType: "json",
+                    success: function(response) {
+                        if (response.error) {
+                            alert('Error: ' + response.error);
+                        } else {
+                            $(this).closest('tr').remove();
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error en la solicitud: ' + textStatus);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
