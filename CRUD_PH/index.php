@@ -11,10 +11,11 @@
     <script src="js/script.js"></script>
     <style>
         body {
-            background-image: url('roxyfondo.jpg');
-            background-size: cover;
+            background-image: url('background.jpg');
+            background-size: cover;     
             background-repeat: no-repeat;
-            background-position: center center;
+            background-attachment: fixed; 
+            background-position: center center; 
         }
     </style>
 </head>
