@@ -12,7 +12,7 @@ $(document).ready(function() {
         var cumple = $('#per_cumple').val();
         var mail = $('#per_mail').val();
         var cel = $('#doce_cel').val();
-
+    
         var personData = {
             doce_nombre: nombre,
             doce_apellido: apellido,
@@ -20,7 +20,7 @@ $(document).ready(function() {
             per_mail: mail,
             doce_cel: cel
         };
-
+    
         if(id) {
             // Actualizar persona existente
             $.ajax({
@@ -76,6 +76,8 @@ $(document).ready(function() {
                     </tr>`
                 );
             });
+            // Agrega la clase de Bootstrap para estilizar la tabla
+            $('#personTable').addClass('table table-striped');
         });
     }
 
