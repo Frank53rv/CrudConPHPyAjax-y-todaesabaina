@@ -4,15 +4,15 @@ $(document).ready(function() {
     // Cargar personas al cargar la página
     loadPersons();
 
-    // Botón Guardar (Crear o Actualizar)
-    $('#submitBtn').click(function() {
+    // Asegúrate de que el evento click solo se enlace una vez
+    $('#submitBtn').off('click').on('click', function() {
         var id = $('#id').val();
         var nombre = $('#doce_nombre').val();
         var apellido = $('#doce_apellido').val();
         var cumple = $('#per_cumple').val();
         var mail = $('#per_mail').val();
         var cel = $('#doce_cel').val();
-    
+
         var personData = {
             doce_nombre: nombre,
             doce_apellido: apellido,
@@ -20,16 +20,16 @@ $(document).ready(function() {
             per_mail: mail,
             doce_cel: cel
         };
-    
-        if(id) {
+
+        if (id) {
             // Actualizar persona existente
             $.ajax({
                 url: baseUrl + 'update.php',
                 type: 'PUT',
                 contentType: 'application/json',
-                data: JSON.stringify({...personData, id: id}),
+                data: JSON.stringify({ ...personData, id: id }),
                 success: function(response) {
-                    alert(response.message);  // Verificar qué propiedad contiene el mensaje
+                    alert(response.message);
                     $('#personForm')[0].reset();
                     loadPersons();
                 },
@@ -45,7 +45,7 @@ $(document).ready(function() {
                 contentType: 'application/json',
                 data: JSON.stringify(personData),
                 success: function(response) {
-                    alert(response.message);  // Verificar qué propiedad contiene el mensaje
+                    alert(response.message);
                     $('#personForm')[0].reset();
                     loadPersons();
                 },
@@ -95,14 +95,14 @@ $(document).ready(function() {
 
     // Eliminar persona
     window.deletePerson = function(id) {
-        if(confirm("¿Estás seguro de que deseas eliminar este registro?")) {
+        if (confirm("¿Estás seguro de que deseas eliminar este registro?")) {
             $.ajax({
                 url: baseUrl + 'delete.php',
                 type: 'DELETE',
                 contentType: 'application/json',
                 data: JSON.stringify({ id: id }),
                 success: function(response) {
-                    alert(response.message);  // Verificar qué propiedad contiene el mensaje
+                    alert(response.message);
                     loadPersons();
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
