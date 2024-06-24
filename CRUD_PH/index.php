@@ -9,7 +9,16 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="js/script.js"></script>
+    <style>
+        body {
+            background-image: url('roxyfondo.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+    </style>
 </head>
+
 <body>
     <div class="container mt-5">
         <h1 class="text-center">CRUD Application</h1>
