@@ -1,2 +1,1 @@
-David Rodriguez
-Yo hice las funciones del crud y la oarte del JavaScript
+CRUD con api en AJAX
